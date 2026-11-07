@@ -1,7 +1,7 @@
 {
   "name": "@labset/base-template",
   "version": "1.0.0",
-  "description": "",
+  "description": "Labset Base Template",
   "main": "index.js",
   "scripts": {
     "dev": "nx run-many -t dev",
@@ -14,9 +14,12 @@
     "clean": "nx run-many -t clean && nx reset && rm -rf node_modules .nx/",
     "sign": "git rebase --exec 'git commit --amend --no-edit -S' origin/main"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "monorepo",
+    "template"
+  ],
+  "author": "Hasnae R. <>",
+  "license": "UNLICENSED",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
@@ -27,6 +30,7 @@
   "packageManager": "pnpm@12.16.1",
   "type": "module",
   "devDependencies": {
-    "nx": "24.0.4"
+    "nx": "24.0.4",
+    "prettier": "^3.9.10"
   }
 }
