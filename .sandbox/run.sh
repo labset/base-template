@@ -3,7 +3,7 @@
 # Usage: .sandbox/run.sh [name]   (default name: monorepo)
 set -euo pipefail
 
-name="${1:-monorepo}"
+name="${1:-"base-template"}"
 cd "$(dirname "$0")/.."
 
 if sbx ls | awk -v n="$name" '$1 == n { found = 1 } END { exit !found }'; then
