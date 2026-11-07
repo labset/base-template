@@ -42,13 +42,16 @@ pnpm build
 
 ## Task graph
 
-Code generation (protobuf/buf, sqlc, ...) is an Nx `generate` target, and `build`, `lint` and `test` each depend on it. Nx runs a project's `generate` first, so generated code is always present and fresh. The wiring is in [`nx.json`](nx.json):
+Code generation (protobuf/buf, sqlc, ...) is an Nx `generate` target, and `build`, `lint` and `test` each depend on it. Nx runs a project's `generate` first, so generated code is always present and fresh. `build`, `lint` and `test` also depend on the `build` of the project's dependencies (`^build`), including nested ones, so they are built first. The wiring is in [`nx.json`](nx.json):
 
 ```text
-generate ──► build
-         ├─► lint
-         └─► test
+build, lint, test  ──►  generate        (same project)
+build, lint, test  ──►  ^build          (dependencies' build)
 ```
+
+`dev` is a [continuous](https://nx.dev/docs/concepts/mental-model#continuous-tasks) task (a long-running server or watcher), so it never blocks the tasks that depend on it. It depends on `^build` and `generate` too, so its dependencies are built before it starts.
+
+`generate`, `build`, `lint` and `test` are cached (`dev` is not). A cache hit replays the output and restores the `build` outputs (`dist`, `build`, `out` under each project) instead of re-running the task. Projects whose `generate` writes files should declare them as `outputs` so they are restored from cache as well. The local cache lives in `.nx/cache` (gitignored).
 
 ```bash
 pnpm exec nx graph                  # explore the project graph
@@ -61,7 +64,7 @@ Run your agent in a [Docker Sandbox](https://docs.docker.com/ai/sandboxes/) so i
 
 ```bash
 # From the repo root: create the sandbox, or reopen it if it already exists
-.sandbox/run.sh [name]  
+.sandbox/run.sh [name]
 
 # Inside the sandbox: install the toolchain and dependencies as usual
 mise install
