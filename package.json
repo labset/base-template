@@ -20,14 +20,13 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.18.0",
+      "version": "12.16.1",
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.18.0",
+  "packageManager": "pnpm@12.16.1",
   "type": "module",
   "devDependencies": {
     "nx": "24.0.4"
-  },
-  "nx": {}
+  }
 }
