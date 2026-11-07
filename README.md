@@ -2,59 +2,77 @@
 
 Labset base template: an [Nx](https://nx.dev) + [pnpm](https://pnpm.io) monorepo with a mise-pinned polyglot toolchain (Node, Go, protobuf/buf codegen), CI pipelines and an optional Docker sandbox for agent work.
 
-## Prerequisites
+## Requirements
 
-- [mise](https://mise.jdx.dev), which installs every tool pinned in `mise.toml` (Node, pnpm, Go, buf, sqlc, atlas, air, golangci-lint, protoc plugins, OpenSpec)
+- [mise](https://mise.jdx.dev), which installs the pinned toolchain (Go, Node, pnpm and the code generators)
+- Optional, to run an agent in a sandbox: [Docker](https://docs.docker.com/get-docker/) and [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) (`sbx`)
+
+### Installing mise
+
+```bash
+brew install mise
+```
+
+Then [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise). For other install methods, see the [mise installation docs](https://mise.jdx.dev/installing-mise.html).
+
+### Installing Docker Sandboxes (optional)
+
+```bash
+brew install docker/tap/sbx
+sbx login
+```
+
+For other install methods, see the [Docker Sandboxes docs](https://docs.docker.com/ai/sandboxes/).
 
 ## Getting started
 
 ```bash
-mise install   # toolchain
-pnpm install   # dependencies
+# 1. Install the pinned toolchain
+mise install
+
+# 2. Install JS dependencies
+pnpm install
+
+# 3. Run tasks across the workspace
+pnpm dev     # start everything in dev mode
+pnpm lint
+pnpm test
+pnpm build
 ```
 
-## Scripts
+## Task graph
 
-Run from the repo root. Most delegate to Nx across all projects.
+Code generation (protobuf/buf, sqlc, ...) is an Nx `generate` target, and `build`, `lint` and `test` each depend on it. Nx runs a project's `generate` first, so generated code is always present and fresh. The wiring is in [`nx.json`](nx.json):
 
-| Script              | Description                                                      |
-| ------------------- | ---------------------------------------------------------------- |
-| `pnpm dev`          | Run the `dev` target of every project                            |
-| `pnpm lint`         | Lint all projects                                                |
-| `pnpm build`        | Build all projects                                               |
-| `pnpm test`         | Test all projects                                                |
-| `pnpm affected`     | Lint, build and test only projects affected versus `origin/main` |
-| `pnpm format`       | Format the repo with Prettier                                    |
-| `pnpm format:check` | Check formatting without writing                                 |
-| `pnpm clean`        | Run project `clean` targets, reset Nx, remove `node_modules`     |
-| `pnpm sign`         | Re-sign commits on top of `origin/main` (GPG)                    |
+```text
+generate ──► build
+         ├─► lint
+         └─► test
+```
 
-## Layout
+```bash
+pnpm exec nx graph                  # explore the project graph
+pnpm exec nx build <project> --graph  # preview the tasks a build would run
+```
 
-| Path                  | Purpose                                                              |
-| --------------------- | -------------------------------------------------------------------- |
-| `mise.toml`           | Pinned toolchain versions                                            |
-| `pnpm-workspace.yaml` | pnpm workspace and shared store config                               |
-| `nx.json`             | Nx workspace config                                                  |
-| `go.work`             | Go workspace                                                         |
-| `.github/workflows`   | CI pipelines                                                         |
-| `.sandbox/`           | Docker Sandboxes setup, see [.sandbox/README.md](.sandbox/README.md) |
+## Developing in a sandbox
+
+Run your agent in a [Docker Sandbox](https://docs.docker.com/ai/sandboxes/) so it only reaches the network hosts listed in [`.sandbox/network-policy`](.sandbox/network-policy/network-policy.yaml).
+
+```bash
+# From the repo root: create the sandbox, or reopen it if it already exists
+.sandbox/run.sh [name]  
+
+# Inside the sandbox: install the toolchain and dependencies as usual
+mise install
+pnpm install
+```
+
+When the Claude kit asks to approve its Anthropic credentials, select **3. No** (start without them).
+
+See [`.sandbox/README.md`](.sandbox/README.md) for how the kits work, changing the network policy and debugging blocked requests.
 
 ## CI
 
 - **pr-build**: on pull requests to `main`, checks formatting and runs `pnpm affected`.
 - **main-build**: on every push to `main`, full verification.
-
-## Sandbox
-
-To work inside an isolated [Docker Sandbox](https://docs.docker.com/ai/sandboxes/):
-
-```bash
-.sandbox/run.sh [name]
-```
-
-See [.sandbox/README.md](.sandbox/README.md) for details.
-
-## License
-
-Unlicensed.
