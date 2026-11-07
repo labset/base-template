@@ -1,0 +1,51 @@
+# syntax=docker/sandbox-kit:3
+# Network allowlist for this workspace, as a declaration-only mixin.
+# Anything not listed here stays blocked by the sandbox's default-deny policy.
+schemaVersion: "3"
+kind: mixin
+displayName: Monorepo network policy
+description: Hosts mise needs to install the toolchain pinned in mise.toml.
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          # mise itself: version index
+          - mise.jdx.dev
+          - mise-versions.jdx.dev
+
+          # aqua backend (air, atlas, buf, golangci-lint, pnpm, protoc-gen-go,
+          # sqlc): registry (raw.githubusercontent.com), version lookup and
+          # release assets from GitHub
+          - github.com
+          - api.github.com
+          - raw.githubusercontent.com
+          - objects.githubusercontent.com
+          - release-assets.githubusercontent.com
+
+          # aqua downloads that aren't served from GitHub: atlas (release.ariga.io)
+          # and sqlc (downloads.sqlc.dev)
+          - release.ariga.io
+          - downloads.sqlc.dev
+
+          # core:go (go): release index and downloads
+          - go.dev
+          - dl.google.com
+
+          # core:node (node): release index and downloads
+          - nodejs.org
+
+          # go backend (protoc-gen-connect-go): go install via the module proxy
+          - proxy.golang.org
+          - sum.golang.org
+
+          # connectrpc.com: vanity import path resolved for protoc-gen-connect-go
+          # and the connectrpc.com/connect module
+          - connectrpc.com
+
+          # npm backend (@bufbuild/protoc-gen-es, @fission-ai/openspec)
+          - registry.npmjs.org
+
+          # shadcn CLI (ui-kit): component registry and schema
+          - ui.shadcn.com

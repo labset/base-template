@@ -1,0 +1,41 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: mixin
+displayName: mise
+description: Installs mise so the toolchain pinned in mise.toml can be installed in the sandbox.
+dockerfile: mise.dockerfile
+
+args:
+  version:
+    default: "v2026.11.3"
+    pattern: '^v[0-9]+\.[0-9]+\.[0-9]+$'
+    description: mise release to install
+    buildArg: MISE_VERSION
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          - mise.jdx.dev
+          - mise-versions.jdx.dev
+          - github.com
+          - objects.githubusercontent.com
+  # The base image sets GOPATH=/go, which the agent user can't write to, and a
+  # kit can't override image env (sbx rejects the conflict). Export it from the
+  # sandbox's persistent env file instead, which every shell sources.
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      startup:
+        - description: Point GOPATH at a writable directory
+          user: root
+          command: >-
+            grep -qs '^export GOPATH=' /etc/sandbox-persistent.sh ||
+            echo 'export GOPATH=/home/agent/go' >> /etc/sandbox-persistent.sh
+        # Non-interactive shells never run `mise activate` hooks, so put the
+        # shims on PATH: tools installed by `mise install` then resolve everywhere.
+        - description: Put mise shims on PATH
+          user: root
+          command: >-
+            grep -qs 'mise/shims' /etc/sandbox-persistent.sh ||
+            echo 'export PATH="/home/agent/.local/share/mise/shims:$PATH"' >> /etc/sandbox-persistent.sh

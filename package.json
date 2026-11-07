@@ -1,0 +1,33 @@
+{
+  "name": "@labset/base-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nx run-many -t dev",
+    "lint": "nx run-many -t lint",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "affected": "nx affected -t lint build test --base=origin/main",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "nx run-many -t clean && nx reset && rm -rf node_modules .nx/",
+    "sign": "git rebase --exec 'git commit --amend --no-edit -S' origin/main"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.18.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.18.0",
+  "type": "module",
+  "devDependencies": {
+    "nx": "24.0.4"
+  },
+  "nx": {}
+}
