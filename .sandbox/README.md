@@ -7,7 +7,7 @@
 From the repo root, create the sandbox or reopen it if it already exists:
 
 ```bash
-.sandbox/run.sh [name]   # name defaults to "monorepo"
+.sandbox/run.sh [name]   # name defaults to the repo directory name
 ```
 
 The Claude kit asks to approve its Anthropic credentials. Select **3. No** (start without them).
