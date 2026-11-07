@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Start (or reopen) the workspace sandbox with the workspace kits attached.
-# Usage: .sandbox/run.sh [name]   (default name: monorepo)
+# Usage: .sandbox/run.sh [name]   (default name: the repo directory name)
 set -euo pipefail
 
-name="${1:-"base-template"}"
 cd "$(dirname "$0")/.."
+name="${1:-"$(basename "$PWD")"}"
 
 if sbx ls | awk -v n="$name" '$1 == n { found = 1 } END { exit !found }'; then
   exec sbx run --name "$name"
