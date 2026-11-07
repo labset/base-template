@@ -1,0 +1,29 @@
+name: main-build
+
+on:
+  push:
+    branches: [main]
+
+# don't cancel: every commit on main gets a full verification
+concurrency:
+  group: main-build
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # toolchain, caches and pnpm install
+      - uses: ./.github/actions/setup
+
+      # prettier over the whole repo (Go is formatted by golangci-lint)
+      - run: pnpm format:check
+
+      # lint, build and test each depend on generate (build also on its
+      # dependencies' build), so nx runs generate once and shares it
+      - run: pnpm exec nx run-many -t lint build test

@@ -1,0 +1,36 @@
+name: setup
+description: Install the pinned toolchain and workspace dependencies, with caching
+
+runs:
+  using: composite
+  steps:
+    # installs the toolchain pinned in mise.toml (tool installs are cached by the action)
+    - uses: jdx/mise-action@v4
+
+    - name: resolve cache paths
+      id: paths
+      shell: bash
+      run: |
+        echo "pnpm-store=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+        echo "go-mod=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+        echo "go-build=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/cache@v6
+      with:
+        path: ${{ steps.paths.outputs.pnpm-store }}
+        key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-${{ runner.os }}-
+
+    # module downloads, compiled packages, cached test results and lint results;
+    # mise.toml is in the key because it pins the go and golangci-lint versions
+    - uses: actions/cache@v6
+      with:
+        path: |
+          ${{ steps.paths.outputs.go-mod }}
+          ${{ steps.paths.outputs.go-build }}
+          ~/.cache/golangci-lint
+        key: go-${{ runner.os }}-${{ hashFiles('mise.toml', '**/go.sum', 'go.work.sum') }}
+        restore-keys: go-${{ runner.os }}-
+
+    - shell: bash
+      run: pnpm install --frozen-lockfile
