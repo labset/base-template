@@ -1,0 +1,19 @@
+.claude/settings.local.json
+.idea/
+.vscode/
+
+node_modules/
+build/
+dist/
+out/
+
+
+.pnpm-store/
+
+# tool caches: TanStack Router's generator temp files, Vite's dep cache
+.tanstack/
+.vite/
+
+.nx/cache
+.nx/workspace-data
+.nx/migrate-runs

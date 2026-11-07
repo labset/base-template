@@ -1,0 +1,9 @@
+.claude/
+.idea/
+.vscode/
+.pnpm-store/
+.nx/
+
+pnpm-lock.yaml
+
+node_modules/

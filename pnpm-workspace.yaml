@@ -1,0 +1,10 @@
+allowBuilds:
+  nx: true
+
+# node_modules is shared between the macOS host and the Linux sandbox, so keep the store
+# in the repo (gitignored) and install native binaries for both platforms
+storeDir: .pnpm-store
+supportedArchitectures:
+  os: [current, darwin, linux]
+  cpu: [current, arm64]
+  libc: [current, glibc]
