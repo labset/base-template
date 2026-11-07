@@ -19,7 +19,7 @@
     "template"
   ],
   "author": "Hasnae R. <>",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
