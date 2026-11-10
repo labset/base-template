@@ -8,3 +8,7 @@ supportedArchitectures:
   os: [current, darwin, linux]
   cpu: [current, arm64]
   libc: [current, glibc]
+
+# nx pins minimatch 10.2.5 (GHSA-g3hv-75wg-m249); drop once nx ships a patched version
+overrides:
+  minimatch: ^11.0.1
