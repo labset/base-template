@@ -16,9 +16,6 @@ enable_tools = [
   "npm:@fission-ai/openspec",
 ]
 
-# Codegen plugins (protoc-gen-*): keep each in step with the runtime library the
-# generated code imports (connectrpc.com/connect and google.golang.org/protobuf
-# in Go, @bufbuild/protobuf in product/advisor/sdks/web/package.json).
 [tools]
 air = "1.67.4"
 atlas = "1.3.0"
