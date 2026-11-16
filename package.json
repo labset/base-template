@@ -30,7 +30,7 @@
   "packageManager": "pnpm@12.16.1",
   "type": "module",
   "devDependencies": {
-    "nx": "24.0.4",
+    "nx": "24.0.6",
     "prettier": "^3.9.10"
   }
 }
